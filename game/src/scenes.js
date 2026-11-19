@@ -32,7 +32,7 @@ function stageSummerExit(game,car,target){
   boxAt(door,trim,0,.52,-.85,.14,.06,1.75);
   boxAt(door,material(0xc2b1a5,.24),.075,.42,-1.48,.035,.048,.23);
 
-  const dani=human(game.scene,car.x+4.1,car.z-.45,{color:0x39a7a6,armed:true});
+  const dani=human(game.scene,car.x+2.85,car.z-.45,{color:0x39a7a6,armed:true});
   dani.mesh.name='Summer Dani on foot';
   dani.heading=bearing(dani,target);
   pose(dani,game.time);
