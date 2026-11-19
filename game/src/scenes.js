@@ -108,7 +108,10 @@ export function stageScene(game,name){
 export function shotCamera(game){
   const {player:p,camera:c,shot}=game;
   if(shot==='summer'){
-    c.fov=54;c.position.set(p.x+.32,2.6,p.z-7.6);c.lookAt(p.x+1.75,1.63,p.z+16);
+    const daniX=p.x+2.85,daniZ=p.z-.45;
+    c.fov=63;
+    c.position.set(daniX+2.65,2.4,daniZ-5.05);
+    c.lookAt(daniX,1.86,daniZ);
   }else if(shot==='spring'){
     c.fov=53;c.position.set(p.x-1.45,2.30,p.z-2.65);c.lookAt(p.x+4,1.55,p.z+7.2);
   }else if(shot==='autumn'){
