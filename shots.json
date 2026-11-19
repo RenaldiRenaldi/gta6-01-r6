@@ -1,0 +1,11 @@
+{
+  "revision": 6,
+  "capture": "Unedited Chromium renders; fixed scene time; JPEG under 80,000 bytes.",
+  "viewport": {"width": 960, "height": 600},
+  "shots": [
+    {"file":"1-summer-hero.jpg","url":"/?shot=summer","season":"Summer","description":"Five-star reserve escape in Kuningan at golden hour."},
+    {"file":"2-spring-market.jpg","url":"/?shot=spring","season":"Spring","description":"Dani holds the flower market against the Vela gunmen."},
+    {"file":"3-autumn-flight.jpg","url":"/?shot=autumn","season":"Autumn","description":"Mara’s Kite over the Glass Quarter during a rooftop rescue."},
+    {"file":"4-winter-coral.jpg","url":"/?shot=winter","season":"Winter","description":"An eastbound escape through Old Coral snowfall."}
+  ]
+}

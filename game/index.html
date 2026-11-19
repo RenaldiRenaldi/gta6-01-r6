@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#152138">
+<meta name="description" content="Solmara: Twelve Debts, an original offline open-world street adventure.">
+<title>Solmara: Twelve Debts</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="./src/hud.css">
+</head>
+<body>
+<canvas id="world" aria-label="Solmara game world"></canvas>
+<main id="hud">
+  <section id="mission" class="panel">
+    <header><span id="debt"></span><time id="timer"></time></header>
+    <h2 id="title"></h2><div id="objective"></div>
+    <div class="stage"><small id="stage"></small><div id="steps"></div></div><small id="next"></small>
+  </section>
+  <section id="dispatch" class="panel">
+    <header><b>🔴 <i>●</i> SOLMARA RESPONSE</b><span id="units"></span></header>
+    <div id="roster"></div><small id="extras"></small>
+  </section>
+  <div id="mast"><strong>SOLMARA</strong><small id="weather"></small></div>
+  <section id="alert"><strong id="money"></strong><div id="stars"></div><span id="sight"></span></section>
+  <section id="loadout" class="panel"><header>LOADOUT <span>1–5 / V</span></header><div id="selected"></div><div id="alternates"></div></section>
+  <section id="mapbox"><div id="radar"><canvas id="map" width="400" height="400" aria-label="Live Kuningan minimap"></canvas></div><strong id="district"></strong><div class="respect"><b>◆ RESPECT</b><span id="respect"></span><div><i id="respectFill"></i></div></div></section>
+  <section id="dialogue" class="panel"><canvas id="portrait" width="112" height="112" aria-label="Contact portrait"></canvas><div><strong id="contact"></strong><p id="line"></p></div></section>
+  <section id="rightfoot"><div id="radio" class="panel"><strong>♫ SOL WAVE 98.4</strong><p id="track"></p></div><div id="telemetry" class="panel"><strong id="vehicle"></strong><div class="condition"><span>CONDITION</span><i><em id="condition"></em></i><span id="health"></span></div><div class="gauge"><strong id="speed"></strong><span id="speedUnit"></span><b id="gear"></b></div></div></section>
+  <span id="controls">WASD MOVE · E INTERACT · J DEBT · CLICK FIRE · F HACK · T SEASON · R RADIO</span>
+  <div id="notice" role="status"></div>
+</main>
+<div id="menu" class="overlay"><div class="card"><small>AN OPEN WORLD STREET STORY</small><h1>Solmara</h1><h2>Twelve Debts</h2><p>Dani Cruz has twelve chances to bring the neighborhood reserve home.</p><button id="play">Enter Solmara</button><p class="muted">WASD to move · Mouse to aim · E to board · J for story</p></div></div>
+<div id="brief" class="overlay hidden"><div class="card"><small>CREW BOARD</small><h2 id="briefTitle"></h2><p id="briefText"></p><ol id="board"></ol><button id="accept">Accept debt</button><button id="close">Back</button></div></div>
+<div id="shop" class="overlay hidden"><div class="card"><small>ESTRELLA SUPPLY</small><h2>Loadout &amp; garage</h2><div id="stock"></div><button id="shopClose">Back</button></div></div>
+<script type="module" src="./src/game.js"></script>
+</body>
+</html>
