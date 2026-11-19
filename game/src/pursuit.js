@@ -6,7 +6,9 @@ const callSigns=['IBIS-43','KESTREL-31','OSPREY-09','SWIFT-24','TERN-16','KITE-5
 export const dispatch=()=>({heat:0,seen:false,units:[],last:{x:0,z:0},lost:0,delay:0,serial:0});
 export function raise(game,amount) {
   const police=game.police;
-  police.heat=clamp(police.heat+amount,0,5);police.lost=0;police.seen=true;
+  police.heat=clamp(police.heat+amount,0,6);police.lost=0;police.seen=true;
+  police.escapeRecorded=false;
+  game.profile.maxHeat=Math.max(game.profile.maxHeat||0,Math.ceil(police.heat));
   police.last={x:game.player.x,z:game.player.z};
 }
 export function addPatrol(game,x,z,state='PURSUIT',heading=0) {
@@ -33,16 +35,19 @@ export function nextJunction(from,to) {
 }
 export function updatePursuit(game,dt){
   const {city,police,player}=game;
-  if(police.heat<=0){if(police.units.length)resetPursuit(game);return;}
+  if(police.heat<=0){
+    if(police.units.length){if(!police.escapeRecorded){game.profile.career??={carsStolen:0,copsEscaped:0,distanceKm:0};game.profile.career.copsEscaped++;police.escapeRecorded=true;}resetPursuit(game);}
+    return;
+  }
   const stars=Math.ceil(police.heat);
   police.delay-=dt;
-  police.seen=police.units.some(u=>u.health>0&&distance(u,player)<(u.kind==='air'?58:42)&&visible(city,{...u,y:u.y+1.5},{...player,y:player.y+1.3}));
+  police.seen=game.time<(game.eyesOutUntil||0)?false:police.units.some(u=>u.health>0&&distance(u,player)<(u.kind==='air'?58:42)&&visible(city,{...u,y:u.y+1.5},{...player,y:player.y+1.3}));
   if(police.seen){police.last={x:player.x,z:player.z};police.lost=0;}
   else{
     police.lost+=dt;
     if(police.lost>17)police.heat=Math.max(0,police.heat-dt*.25);
   }
-  if(police.delay<=0 && police.units.filter(u=>u.health>0).length<[0,1,2,4,6,9][stars]){
+  if(police.delay<=0 && police.units.filter(u=>u.health>0).length<[0,1,2,4,6,9,11][stars]){
     police.delay=2.45;
     if(stars>=4&&!police.units.some(u=>u.kind==='air')) addAirSupport(game,player.x+5,19,player.z+30);
     else {

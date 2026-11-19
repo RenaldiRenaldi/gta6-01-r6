@@ -51,6 +51,10 @@ export function settleDebt(game){
   game.profile.done=Math.max(game.profile.done,j.index+1);
   game.profile.cash+=d.reward;
   game.profile.respect=Math.min(550,game.profile.respect+36);
+  game.profile.rp=Math.min(5200,(game.profile.rp||3900)+325);
+  // Store the run grade with its mission so progression records survive reloads.
+  game.profile.ratings??=[];
+  game.profile.ratings[j.index]=j.timer>debts[j.index].seconds*.65?'G':j.timer>debts[j.index].seconds*.3?'S':'B';
   game.notice('Debt settled · $'+d.reward.toLocaleString('en-US'));
   j.status='settled';
   game.persist();
@@ -139,7 +143,7 @@ export function tickDebt(game,dt){
       if(j.phase<2){
         if(!j.spawned&&gap<32)deployRivals(game,goal,6);
         if(j.spawned&&game.rivals.every(r=>r.health<=0)&&gap<8&&!game.vehicle&&game.keys.has('f'))j.progress+=dt;
-        if(j.progress>=10){j.phase=2;j.progress=0;game.raise(5);confrontation(game,24);}
+        if(j.progress>=10){j.phase=2;j.progress=0;game.alarm();game.raise(4);confrontation(game,24);}
       } else if(!game.police.seen) {
         j.progress+=dt;
         if(j.progress>5)j.phase=3;

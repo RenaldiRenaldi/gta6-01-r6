@@ -32,10 +32,13 @@ function stageSummerExit(game,car,target){
   boxAt(door,trim,0,.52,-.85,.14,.06,1.75);
   boxAt(door,material(0xc2b1a5,.24),.075,.42,-1.48,.035,.048,.23);
 
-  const dani=human(game.scene,car.x+2.85,car.z-.45,{color:0x39a7a6,armed:true});
+  const dani=human(game.scene,car.x+4.1,car.z-.45,{color:0x39a7a6,armed:true});
   dani.mesh.name='Summer Dani on foot';
   dani.heading=bearing(dani,target);
   pose(dani,game.time);
+  game.shotAnchor={x:game.player.x,z:game.player.z};
+  Object.assign(game.player,dani);
+  game.vehicle=null;
   const muzzle=dani.gun.localToWorld(new T.Vector3(0,.062,.655));
   flash(game,muzzle.x,muzzle.y,muzzle.z,dani.heading);
   const shells=game.fx.filter(effect=>effect.kind==='shell').slice(-3);
@@ -44,8 +47,8 @@ function stageSummerExit(game,car,target){
     shell.object.scale.multiplyScalar(1.35);
   }
   game.scene.onBeforeRender=()=>{
-    const frozen=!game.shotLive&&game.vehicle===car;
-    dani.mesh.visible=door.visible=opening.visible=frozen;
+    const frozen=!game.shotLive;
+    door.visible=opening.visible=frozen;
   };
 }
 export function stageScene(game,name){
@@ -54,7 +57,7 @@ export function stageScene(game,name){
     prepare(game,11,2,96,98640,487);game.season=1;
     const car=put(game,1.4,9,0xf13428,.13);
     lead(game,car,163,82);
-    raise(game,5);
+    raise(game,6);
     const nearestPatrol=addPatrol(game,5.3,16,'RAMMING',.25);
     addPatrol(game,-6.2,12.2,'RAMMING',-.10);
     addAirSupport(game,-2.0,8.5,24).heading=-1.02;
@@ -108,10 +111,9 @@ export function stageScene(game,name){
 export function shotCamera(game){
   const {player:p,camera:c,shot}=game;
   if(shot==='summer'){
-    const daniX=p.x+2.85,daniZ=p.z-.45;
-    c.fov=63;
-    c.position.set(daniX+2.65,2.4,daniZ-5.05);
-    c.lookAt(daniX,1.86,daniZ);
+    // Keep R6's reference framing while staging the six-star on-foot firing beat.
+    const focus=game.shotAnchor||p;
+    c.fov=54;c.position.set(focus.x+.32,2.6,focus.z-7.6);c.lookAt(focus.x+1.75,1.63,focus.z+16);
   }else if(shot==='spring'){
     c.fov=53;c.position.set(p.x-1.45,2.30,p.z-2.65);c.lookAt(p.x+4,1.55,p.z+7.2);
   }else if(shot==='autumn'){

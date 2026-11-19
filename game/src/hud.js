@@ -5,6 +5,7 @@ import {debts} from './debts.js';
 import {weapons} from './action.js';
 import {seasons} from './lighting.js';
 import {radioTracks} from './audio.js';
+import {loadSlots} from './progress.js';
 
 export const el=id=>document.getElementById(id);
 const set=(id,value)=>{const node=el(id);if(node.textContent!==String(value))node.textContent=value;};
@@ -83,7 +84,7 @@ function drawLoadout(game){
 }
 function roster(game){
   const police=game.police,live=police.units.filter(u=>u.health>0);
-  set('units',live.length+' UNITS · CODE '+Math.ceil(police.heat));
+  set('units',live.length+' UNITS · CODE '+Math.min(5,Math.ceil(police.heat))+' · '+Math.ceil(police.heat)+'★ MAX');
   const items=live.slice(0,5).map(u=>{
     const line=document.createElement('div');line.className='unit';
     const id=document.createElement('span'), range=document.createElement('span'), status=document.createElement('b');
@@ -116,8 +117,9 @@ export function drawHud(game){
   set('next',steps[phase+1]?'NEXT / '+steps[phase+1]:'OBJECTIVE / '+steps[phase]);
   set('weather',weather.name+' · '+weather.weather+' · '+weather.time);
   set('money',dollars(profile.cash));
-  set('stars','★'.repeat(heat)+'☆'.repeat(5-heat));
+  set('stars','★'.repeat(heat)+'☆'.repeat(6-heat));
   set('sight',heat?(game.police.seen?'WANTED / IN SIGHT':'SEARCH / STAY HIDDEN'):'FREE ROAM');
+  el('searchCircle').className=heat&&!game.police.seen?'active':'';
   set('district',districtName(player));
   set('respect',profile.respect+' / 550');
   el('respectFill').style.width=profile.respect/5.5+'%';
@@ -131,9 +133,30 @@ export function drawHud(game){
   const speed=Math.min(163,Math.round(Math.abs(vehicle?.speed||0)*3.6));
   set('speed',vehicle?speed:'ON');set('speedUnit',vehicle?(vehicle.kind==='air'?'AIR KM/H':'KM/H'):'FOOT');
   set('gear',vehicle?(vehicle.kind==='air'?'AIR':speed<4?'N':'G'+clamp(Math.ceil(speed/34),1,5)):'Q');
+  const rp=profile.rp??3900,cap=5200,rank=rp>=5200?'SHOT CALLER':rp>=3000?'FIXER':rp>=1800?'OPERATOR':rp>=1000?'SCAVENGER':rp>=400?'WHEELMAN':'RUNNER';
+  set('crewRank','RANK '+(rp>=5200?6:rp>=3000?5:rp>=1800?4:rp>=1000?3:rp>=400?2:1)+' · '+rank);set('rpValue',rp.toLocaleString('en-US')+' / '+cap.toLocaleString('en-US')+' RP');set('rpNext',rp>=cap?'TOP CREW RANK':(cap-rp).toLocaleString('en-US')+' TO SHOT CALLER');el('rpFill').style.width=Math.min(100,rp/cap*100)+'%';
+  set('komodoCount',(game.shot?12:profile.komodos?.length||0)+'/20');
   set('controls',vehicle?(vehicle.kind==='air'?'WASD THRUST & YAW · SPACE LIFT · CTRL DESCEND · E EXIT · T SEASON':'WASD DRIVE · SHIFT BOOST · SPACE DRIFT · E EXIT · J DEBT · M RADAR · R RADIO'):'WASD MOVE · E INTERACT · CLICK FIRE · Q COVER · J DEBT · F HACK · T SEASON');
   set('notice',game.noticeUntil>game.time?game.noticeText:'');
   roster(game);drawLoadout(game);drawRadar(el('map'),game);
+}
+function cityMap(){
+  const districts=[['KUNINGAN',118,80],['MENTENG',265,48],['RASUNA SAID',410,82],['SETIABUDI',520,145],['GLASS QUARTER',675,100],['CASABLANCA',595,250],['KUMALA STRAND',740,360],['PELABUHAN TUA',570,438],['RAWA MUARA',410,420],['OLD CORAL',250,380],['KEPULAUAN SERIBU',760,72]];
+  return '<svg class="jakarta-map" viewBox="0 0 900 560" role="img" aria-label="Jakarta island map with pink route"><path class="map-water" d="M0 0h900v560H0z"/><path class="map-land" d="M75 66C205 22 328 58 408 43c110-20 159 25 254 7 81-15 135 18 154 78 25 82-20 109 23 178 36 59-28 121-107 133-126 20-174 85-294 38-112-44-201-40-279-91-83-54-111-115-82-183 22-53 3-96-2-137z"/><path class="map-road" d="M100 145L295 108 460 130 650 95 789 176M130 285L289 252 443 273 599 238 770 292M148 414L302 374 430 402 604 370 768 417M227 70L210 477M393 46L401 498M553 63L539 475M680 83L692 481"/><path class="map-route" d="M104 431C175 377 189 300 278 265S388 153 469 189s74 109 146 129 84 34 141 66"/><circle class="map-pin" cx="104" cy="431" r="9"/><circle class="map-pin" cx="790" cy="384" r="9"/>'+districts.map(([n,x,y])=>'<g class="map-label" transform="translate('+x+' '+y+')"><circle r="4"/><text x="8" y="4">'+n+'</text></g>').join('')+'</svg>';
+}
+export function drawRecords(game){
+  const p=game.profile,done=game.statsShot?12:Math.min(12,p.done||0),cash=game.statsShot?98640:p.cash||0;
+  const career=game.statsShot?{carsStolen:26,copsEscaped:14,distanceKm:83.6}:p.career||{};
+  const checklist=['Twelve Debts','Kuningan safehouse','Menteng market lead','Rasuna Said relay','Setiabudi archive','Glass Quarter rooftop','Casablanca night run','Kumala Strand escape','Pelabuhan Tua freight','Rawa Muara canal','Old Coral snowfall','Kepulauan Seribu flight','Swap Plates crew skill','Quick Fix crew skill','Eyes Out crew skill','Golden Komodo cache','Six-star response','All seasons visited'];
+  const rows=checklist.map((label,i)=>{const complete=i<done||i===12&&(p.abilityUses?.z||0)>0||i===13&&(p.abilityUses?.x||0)>0||i===14&&(p.abilityUses?.c||0)>0||i===15&&(p.komodos?.length||0)>=20||i===16&&(p.maxHeat||0)>=6||i===17&&(p.seasonsPlayed?.length||0)>=4;return '<li class="check-row '+(complete?'complete':'')+'"><i></i><span>'+label+'</span><b>'+(complete?'DONE':i===15?(p.komodos?.length||0)+'/20':'OPEN')+'</b></li>';}).join('');
+  const grades=game.statsShot?Array.from({length:12},(_,i)=>i%3===0?'G':'S'):(p.ratings||[]);
+  const ratings=Array.from({length:12},(_,i)=>'<span class="rating '+(grades[i]?'gold':'')+'">'+String(i+1).padStart(2,'0')+'<b>'+(grades[i]||'—')+'</b></span>').join('');
+  const slots=game.statsShot?[{done:12,cash:98640,season:0},{done:8,cash:54200,season:2},{done:3,cash:12450,season:1}]:loadSlots();
+  const saveItems=Array.from({length:3},(_,i)=>{const slot=slots[i],mode=slot?'load':'save';return '<div><b>SLOT '+(i+1)+'</b><small>'+(slot?Math.min(12,slot.done||0)+'/12 · '+dollars(slot.cash||0)+' · '+['SUMMER','SPRING','AUTUMN','WINTER'][slot.season||0]:'EMPTY · NO SAVE')+'</small><button data-stats-slot="'+i+'" data-mode="'+mode+'">'+(slot?'LOAD':'SAVE')+'</button></div>';}).join('');
+  const rp=p.rp??3900,rankLevel=rp>=5200?6:rp>=3000?5:rp>=1800?4:rp>=1000?3:rp>=400?2:1,rank=rankLevel===6?'SHOT CALLER':'FIXER';
+  el('statsPanel').innerHTML='<header class="stats-head"><div><small>SOLMARA CITY RECORDS</small><h1>PROGRESSION</h1></div><strong>'+dollars(cash)+'</strong><button data-stats="back">ESC · BACK</button></header><div class="stats-body"><section class="stats-map panel"><h2>JAKARTA ISLAND <small>11 DISTRICTS · PINK ROUTE</small></h2>'+cityMap()+'<footer>◆ ROUTE ACTIVE · KUNINGAN → KUMALA STRAND</footer></section><aside class="stats-column"><section class="panel completion"><h2>CITY COMPLETION</h2><div class="completion-ring" style="--pct:'+done/12*100+'%"><b>'+done+'/12</b><small>DEBTS</small></div><p>CRIMINAL PROFILE <strong>DANI CRUZ</strong></p><p>RANK '+rankLevel+' '+rank+' · '+rp.toLocaleString('en-US')+' / 5,200 RP</p></section><section class="panel totals"><h2>CAREER TOTALS</h2><div><span><b>'+(career.carsStolen||0)+'</b><small>CARS STOLEN</small></span><span><b>'+(career.copsEscaped||0)+'</b><small>COPS ESCAPED</small></span><span><b>'+Number(career.distanceKm||0).toFixed(1)+' km</b><small>DISTANCE DRIVEN</small></span></div></section><section class="panel ratings"><h2>MISSION RATINGS 01–12</h2><div>'+ratings+'</div></section><section class="panel checklist"><h2>CASE CHECKLIST <small>18 RECORDS</small></h2><ol>'+rows+'</ol></section><section class="panel save-records"><h2>SAVE SLOTS</h2><div class="save-grid">'+saveItems+'</div></section></aside></div>';
+  el('statsPanel').querySelector('[data-stats="back"]').onclick=()=>game.showScreen('menu');
+  el('statsPanel').querySelectorAll('[data-stats-slot]').forEach(button=>button.onclick=()=>game.selectSlot(Number(button.dataset.statsSlot),button.dataset.mode));
 }
 export function showBrief(game){
   el('brief').classList.remove('hidden');

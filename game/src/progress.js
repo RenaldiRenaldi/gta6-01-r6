@@ -2,18 +2,27 @@ import {random,distance,clamp,T,shape,material} from './geometry.js';
 import {weapons} from './action.js';
 
 const key='solmara-r6-profile';
-export const newProfile=()=>({version:6,cash:4800,respect:45,done:0,ammo:[28,0,0],owned:[0,4],races:[],ledgers:[],jumps:[],season:1,boost:false,engine:false,armor:false,paint:0xec432c});
-export function loadProfile() {
+const slotsKey='solmara-r6-slots';
+export const newProfile=()=>({version:6,cash:4800,respect:45,done:0,rp:3900,ammo:[28,0,0],owned:[0,4],races:[],ledgers:[],komodos:[],career:{carsStolen:0,copsEscaped:0,distanceKm:0},abilityUses:{z:0,x:0,c:0},maxHeat:0,ratings:[],jumps:[],season:1,boost:false,engine:false,armor:false,paint:0xec432c});
+export function loadSlots(){
+  try{
+    const slots=JSON.parse(localStorage.getItem(slotsKey)||'[]');
+    if(Array.isArray(slots)&&slots.length)return slots.slice(0,3);
+    const old=JSON.parse(localStorage.getItem(key)||'null');
+    return old?.version===6?[old]:[];
+  }catch{return [];}
+}
+export function loadProfile(slot=0) {
   // Invalid or older saves fall back to a complete current-version profile.
   try{
-    const value=JSON.parse(localStorage.getItem(key));
+    const value=loadSlots()[slot]||(slot===0?JSON.parse(localStorage.getItem(key)):null);
     if(value?.version===6&&Number.isFinite(value.cash)&&Array.isArray(value.owned)&&Array.isArray(value.ammo))
       return {...newProfile(),...value,done:clamp(value.done,0,12),season:clamp(value.season,0,3)};
   }catch{}
   return newProfile();
 }
-export function saveProfile(profile){
-  try{localStorage.setItem(key,JSON.stringify(profile));return true;}catch{return false;}
+export function saveProfile(profile,slot=0){
+  try{const slots=loadSlots(),copy=JSON.parse(JSON.stringify({...profile,savedAt:Date.now()}));slots[slot]=copy;localStorage.setItem(slotsKey,JSON.stringify(slots));localStorage.setItem(key,JSON.stringify(copy));return true;}catch{return false;}
 }
 export function buy(profile,index) {
   const w=weapons[index];
@@ -45,7 +54,13 @@ export function createActivities(scene){
     for(const side of [-1,1])shape(mesh,new T.BoxGeometry(.18,.15,1),material(0xffd66f,.5,.2),side*1.6,.15,0);
     return {x,z,id,mesh};
   });
-  return {tokens,ramps,timeTrial:null,jumping:null};
+  const komodos=Array.from({length:20},(_,i)=>{
+    const x=(i%5-2)*57+(i%2?15:-11),z=(Math.floor(i/5)-1)*58+(rng()-.5)*24;
+    const mesh=shape(scene,new T.TorusGeometry(.38,.13,7,14),material(0xe8b44f,.3,.8),x,.86,z);
+    mesh.rotation.x=Math.PI/2;
+    return {x,z,mesh,i};
+  });
+  return {tokens,komodos,ramps,timeTrial:null,jumping:null};
 }
 export function startTrial(game){
   if(!game.vehicle||game.vehicle.kind!=='car')return false;
@@ -77,6 +92,15 @@ export function updateActivities(game,dt){
     if(token.mesh.visible&&!game.vehicle&&distance(game.player,token)<1.2){
       game.profile.ledgers.push(token.i);game.profile.cash+=250;game.profile.respect=Math.min(550,game.profile.respect+5);
       game.notice('Ledger recovered · $250');game.persist();
+    }
+  }
+  for(const item of a.komodos){
+    item.mesh.visible=!(game.profile.komodos||[]).includes(item.i);
+    item.mesh.rotation.z=game.time*1.4;
+    if(item.mesh.visible&&!game.vehicle&&distance(game.player,item)<1.4){
+      game.profile.komodos??=[];game.profile.komodos.push(item.i);
+      game.profile.cash+=500;game.profile.respect=Math.min(550,game.profile.respect+4);
+      game.notice('Golden Komodo found · '+game.profile.komodos.length+'/20');game.persist();
     }
   }
   const r=a.timeTrial;

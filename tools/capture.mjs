@@ -2,6 +2,8 @@ import {mkdirSync,readFileSync} from 'node:fs';
 import {withBrowser} from './browser.mjs';
 
 const manifest=JSON.parse(readFileSync('shots.json','utf8'));
+const {width,height}=manifest.viewport;
+if(Math.max(width,height)>1280||Math.min(width,height)<480)throw Error('Capture viewport must stay within 480–1280 pixels per side');
 mkdirSync('screenshots',{recursive:true});
 await withBrowser(async (browser,base)=>{
   const scenes=manifest.shots.filter(s=>!process.env.SHOT||s.season.toLowerCase()===process.env.SHOT);
@@ -31,11 +33,11 @@ await withBrowser(async (browser,base)=>{
       let low=35,high=90,best=0;
       while(low<=high) {
         const quality=Math.floor((low+high)/2), bytes=await photo(quality);
-        if(bytes.length<80000){best=quality;low=quality+1;}else high=quality-1;
+        if(bytes.length<262144){best=quality;low=quality+1;}else high=quality-1;
       }
       if(!best)throw Error('Capture is too large: '+shot.file);
       const result=await page.screenshot({path:'screenshots/'+shot.file,type:'jpeg',quality:best,animations:'disabled',timeout:180000});
-      if(result.length>=80000||errors.length)throw Error('Capture finalization failed: '+shot.file);
+      if(result.length>=262144||errors.length)throw Error('Capture finalization failed: '+shot.file);
       console.log(shot.file+' '+result.length+' bytes · Q'+best);
     }finally{await page.close();}
   }

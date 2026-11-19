@@ -22,15 +22,38 @@
     <div id="roster"></div><small id="extras"></small>
   </section>
   <div id="mast"><strong>SOLMARA</strong><small id="weather"></small></div>
-  <section id="alert"><strong id="money"></strong><div id="stars"></div><span id="sight"></span></section>
+  <section id="alert"><strong id="money"></strong><div id="stars" aria-label="Wanted level, up to six stars"></div><span id="sight"></span><span id="searchCircle" aria-label="Heat search circle"></span></section>
   <section id="loadout" class="panel"><header>LOADOUT <span>1–5 / V</span></header><div id="selected"></div><div id="alternates"></div></section>
+  <section id="crewHud" class="panel" aria-label="Crew rank and abilities">
+    <header><b>CREW RATING</b><span id="crewRank"></span></header>
+    <div class="rp-line"><span id="rpValue"></span><span id="rpNext"></span></div><div class="rp-track"><i id="rpFill"></i></div>
+    <div class="ability-cards">
+      <button data-ability="z"><kbd>Z</kbd><b>SWAP PLATES</b><small>INES</small></button>
+      <button data-ability="x"><kbd>X</kbd><b>QUICK FIX</b><small>LIO</small></button>
+      <button data-ability="c"><kbd>C</kbd><b>EYES OUT</b><small>LUZ</small></button>
+    </div>
+    <div id="komodo">◆ GOLDEN KOMODO <b id="komodoCount">12/20</b></div>
+  </section>
   <section id="mapbox"><div id="radar"><canvas id="map" width="400" height="400" aria-label="Live Kuningan minimap"></canvas></div><strong id="district"></strong><div class="respect"><b>◆ RESPECT</b><span id="respect"></span><div><i id="respectFill"></i></div></div></section>
   <section id="dialogue" class="panel"><canvas id="portrait" width="112" height="112" aria-label="Contact portrait"></canvas><div><strong id="contact"></strong><p id="line"></p></div></section>
   <section id="rightfoot"><div id="radio" class="panel"><strong>♫ SOL WAVE 98.4</strong><p id="track"></p></div><div id="telemetry" class="panel"><strong id="vehicle"></strong><div class="condition"><span>CONDITION</span><i><em id="condition"></em></i><span id="health"></span></div><div class="gauge"><strong id="speed"></strong><span id="speedUnit"></span><b id="gear"></b></div></div></section>
   <span id="controls">WASD MOVE · E INTERACT · J DEBT · CLICK FIRE · F HACK · T SEASON · R RADIO</span>
   <div id="notice" role="status"></div>
 </main>
-<div id="menu" class="overlay"><div class="card"><small>AN OPEN WORLD STREET STORY</small><h1>Solmara</h1><h2>Twelve Debts</h2><p>Dani Cruz has twelve chances to bring the neighborhood reserve home.</p><button id="play">Enter Solmara</button><p class="muted">WASD to move · Mouse to aim · E to board · J for story</p></div></div>
+<div id="menu" class="overlay title-overlay"><div class="title-card">
+  <header class="title-mark"><small>JAKARTA AFTER DARK</small><h1>SOLMARA</h1><h2>TWELVE DEBTS</h2></header>
+  <nav id="mainMenu" class="main-menu" aria-label="Solmara main menu">
+    <button data-menu="continue">CONTINUE</button><button data-menu="new">NEW GAME</button>
+    <button data-menu="load">LOAD GAME</button><button data-menu="save">SAVE GAME</button>
+    <button data-menu="settings">SETTINGS</button><button data-menu="free">FREE ROAM</button>
+    <button data-menu="stats">PROGRESSION</button><button data-menu="wanted">WANTED FILE</button>
+  </nav>
+  <section id="titleSlots" class="title-slots" aria-label="Save slots"></section>
+  <p class="title-foot">DANI CRUZ · KUNINGAN · KEYBOARD + MOUSE</p>
+</div></div>
+<div id="menuDialog" class="hidden"></div>
+<div id="stats" class="overlay hidden"><div id="statsPanel" class="stats-panel"></div></div>
+<div id="wanted" class="overlay hidden"><div class="wanted-card panel"><header><span>WANTED FILE · 07-122</span><button data-wanted-close>ESC · BACK</button></header><h1>DANI CRUZ</h1><p>THE FIXER · KUNINGAN / JAKARTA</p><div class="wanted-stars">★★★★★★</div><p>Response profile: witness alarms, vehicle trackers and aerial search. Six star maximum.</p><div class="wanted-meta"><span>12 DEBTS CLOSED</span><span>CODE RESPONSE 5</span><span>HEAT SEARCH ACTIVE</span></div><button data-wanted-close>RETURN TO TITLE</button></div></div>
 <div id="brief" class="overlay hidden"><div class="card"><small>CREW BOARD</small><h2 id="briefTitle"></h2><p id="briefText"></p><ol id="board"></ol><button id="accept">Accept debt</button><button id="close">Back</button></div></div>
 <div id="shop" class="overlay hidden"><div class="card"><small>ESTRELLA SUPPLY</small><h2>Loadout &amp; garage</h2><div id="stock"></div><button id="shopClose">Back</button></div></div>
 <script type="module" src="./src/game.js"></script>
