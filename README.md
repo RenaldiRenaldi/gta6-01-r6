@@ -1,5 +1,9 @@
 # Solmara: Twelve Debts
 
+[![make.fun](https://make.fun/badge/gta6-01.svg)](https://make.fun/competitions/gta6-01)
+[![Rank](https://make.fun/badge/gta6-01/RenaldiRenaldi/gta6-01-r6/rank.svg)](https://make.fun/competitions/gta6-01)
+[![Reward](https://make.fun/badge/gta6-01/RenaldiRenaldi/gta6-01-r6/reward.svg)](https://make.fun/competitions/gta6-01)
+
 An offline street adventure about Dani Cruz and the neighborhood reserve.
 
 ## Why R6 beats R5 and #1

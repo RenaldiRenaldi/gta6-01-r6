@@ -2,6 +2,7 @@ import {coupe,helicopter,human,pose,syncVehicle} from './actors.js';
 import {addPatrol,addAirSupport,raise} from './pursuit.js';
 import {confrontation,spawnRivals,flash,tickAction} from './action.js';
 import {newJob} from './debts.js';
+import {T,bearing,boxAt,material,model} from './geometry.js';
 
 export const shotNames=['summer','spring','autumn','winter'];
 function prepare(game,index,phase,timer,money,respect){
@@ -19,13 +20,42 @@ function lead(game,v,kmh,hp){
   Object.assign(game.player,{x:v.x,y:v.y,z:v.z,heading:v.heading});
   game.player.mesh.visible=false;syncVehicle(v,game.time);
 }
+function stageSummerExit(game,car,target){
+  // The frozen hero frame retains the chase telemetry and radar anchor.
+  const door=model(car.mesh,1.22,.68,.95);
+  door.rotation.y=-1.05;
+  door.name='Summer driver door';
+  const trim=material(0x25232b,.46);
+  const opening=boxAt(car.mesh,trim,1.238,.945,.03,.035,.52,1.68);
+  boxAt(door,car.coat,0,.24,-.85,.13,.52,1.75);
+  boxAt(door,trim,-.075,.29,-.85,.045,.37,1.58);
+  boxAt(door,trim,0,.52,-.85,.14,.06,1.75);
+  boxAt(door,material(0xc2b1a5,.24),.075,.42,-1.48,.035,.048,.23);
+
+  const dani=human(game.scene,car.x+2.85,car.z-.45,{color:0x39a7a6,armed:true});
+  dani.mesh.name='Summer Dani on foot';
+  dani.heading=bearing(dani,target);
+  pose(dani,game.time);
+  const muzzle=dani.gun.localToWorld(new T.Vector3(0,.062,.655));
+  flash(game,muzzle.x,muzzle.y,muzzle.z,dani.heading);
+  const shells=game.fx.filter(effect=>effect.kind==='shell').slice(-3);
+  for(const [i,shell] of shells.entries()){
+    shell.object.position.copy(dani.gun.localToWorld(new T.Vector3(-.14-i*.16,.11+i*.12,.02-i*.12)));
+    shell.object.scale.multiplyScalar(1.35);
+  }
+  game.scene.onBeforeRender=()=>{
+    const frozen=!game.shotLive&&game.vehicle===car;
+    dani.mesh.visible=door.visible=opening.visible=frozen;
+  };
+}
 export function stageScene(game,name){
   const {scene,player}=game;
   if(name==='summer'){
     prepare(game,11,2,96,98640,487);game.season=1;
-    lead(game,put(game,1.4,9,0xf13428,.13),163,82);
+    const car=put(game,1.4,9,0xf13428,.13);
+    lead(game,car,163,82);
     raise(game,5);
-    addPatrol(game,5.3,16,'RAMMING',.25);
+    const nearestPatrol=addPatrol(game,5.3,16,'RAMMING',.25);
     addPatrol(game,-6.2,12.2,'RAMMING',-.10);
     addAirSupport(game,-2.0,8.5,24).heading=-1.02;
     addPatrol(game,-6.3,39,'FIRING',.21);
@@ -37,6 +67,7 @@ export function stageScene(game,name){
     confrontation(game,21);
     put(game,7.4,33,0xe8c975,-.35);
     put(game,-6.3,51,0xf5c070,.05);
+    stageSummerExit(game,car,nearestPatrol);
   }else if(name==='spring'){
     prepare(game,2,1,134,12450,180);game.season=0;
     Object.assign(player,{x:-1.2,z:2.3,heading:0,mode:'aim',armed:true});game.cover=true;
@@ -77,7 +108,7 @@ export function stageScene(game,name){
 export function shotCamera(game){
   const {player:p,camera:c,shot}=game;
   if(shot==='summer'){
-    c.fov=54;c.position.set(p.x+.45,2.8,p.z-8);c.lookAt(p.x+.45,1.6,p.z+16);
+    c.fov=54;c.position.set(p.x+.32,2.6,p.z-7.6);c.lookAt(p.x+1.75,1.63,p.z+16);
   }else if(shot==='spring'){
     c.fov=53;c.position.set(p.x-1.45,2.30,p.z-2.65);c.lookAt(p.x+4,1.55,p.z+7.2);
   }else if(shot==='autumn'){
