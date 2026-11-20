@@ -109,10 +109,10 @@ button:focus-visible{outline:3px solid var(--aqua)}.hidden{display:none}
 .title-mark h1{font-size:clamp(80px,12.8vw,150px)}
 body[data-screen=menu] #hud,body[data-screen=stats] #hud,body[data-screen=wanted] #hud{visibility:hidden}
 
-/* Vice Sunset treatment, limited to the title and progression screens. */
+/* Vice Sunset colors: preserve the 989f91e logo and island proportions. */
 .title-overlay{background:linear-gradient(128deg,#f27643ed 0%,#ed4b82e8 43%,#341849ed 100%)}
 .title-overlay:before{opacity:.25;background:linear-gradient(154deg,transparent 37%,#ffb05c60 37%,transparent 62%),repeating-linear-gradient(90deg,#45e5dc 0 1px,transparent 1px 76px),repeating-linear-gradient(0deg,#ffcf79 0 1px,transparent 1px 58px);mix-blend-mode:screen}
-.title-mark h1{font-size:clamp(70px,10.7vw,126px);color:#ffe3a5;text-shadow:0 3px 0 #81294f,0 0 8px #ff36a6,0 0 22px #ff258e,0 10px 28px #1b092c}
+.title-mark h1{color:#ffe3a5;text-shadow:0 3px 0 #81294f,0 0 8px #ff36a6,0 0 22px #ff258e,0 10px 28px #1b092c}
 .title-mark h2{color:#ffadca;text-shadow:0 0 9px #ff3da3,0 2px 8px #160a24}
 .title-mark small{color:#fff0b7;text-shadow:0 0 8px #ff3c9d}
 .main-menu button{color:#fff1de;background:#21152beF;border-color:#ff54a7;border-left-color:#ffd071;box-shadow:0 0 8px #ff3c9238;text-shadow:0 1px 3px #140b20}
@@ -131,11 +131,11 @@ body[data-screen=menu] #hud,body[data-screen=stats] #hud,body[data-screen=wanted
 #stats .stats-map.panel{border-left-color:#ff55a9}
 #stats .stats-map h2,#stats .stats-column h2,#stats .checklist h2,#stats .save-records h2{color:#ffd77f;text-shadow:0 0 7px #ff379c}
 #stats .stats-map h2 small,#stats .checklist h2 small{color:#79f3e5;text-shadow:0 0 5px #36cfc0}
-#stats .jakarta-map{min-height:0;background:#32c9c4;border-color:#5af4e1;box-shadow:0 0 14px #22ddd77a;filter:drop-shadow(0 0 6px #ff38904a)}
+#stats .jakarta-map{background:#32c9c4;border-color:#5af4e1;box-shadow:0 0 14px #22ddd77a;filter:drop-shadow(0 0 6px #ff38904a)}
 #stats .map-water{fill:#29bfc0}
 #stats .map-land{fill:#f49b67;stroke:#ffd685;stroke-width:4}
 #stats .map-road{stroke:#367d89;stroke-width:9;opacity:.9}
-#stats .map-route{stroke:#ff369d;stroke-width:9;filter:drop-shadow(0 0 5px #ff138b) drop-shadow(0 0 11px #ff53b6)}
+#stats .map-route{stroke:#ff369d;filter:drop-shadow(0 0 5px #ff138b) drop-shadow(0 0 11px #ff53b6)}
 #stats .map-label circle{fill:#ff3499;stroke:#2a1538;stroke-width:2}
 #stats .map-label text{fill:#fff4d3;stroke:#30203f}
 #stats .map-pin{fill:#ffcf70;stroke:#ff37a0;stroke-width:4;filter:drop-shadow(0 0 6px #ff36a0)}
@@ -148,6 +148,12 @@ body[data-screen=menu] #hud,body[data-screen=stats] #hud,body[data-screen=wanted
 #stats .check-row{color:#b8ccd0}#stats .check-row.complete{color:#fff0cf}#stats .check-row.complete i{background:#51e0d0;border-color:#51e0d0}#stats .check-row b{color:#9487a3}#stats .check-row.complete b{color:#60eadd}
 #stats .save-grid>div{background:#241935;border-color:#ea4f9c}#stats .save-grid b{color:#ffd47e}#stats .save-grid small{color:#c8e3df}
 #stats .save-grid button{color:#321633;background:linear-gradient(100deg,#ffd174,#ff8e66);box-shadow:0 0 6px #ff3c9738}
-#stats .stats-body{grid-template-columns:minmax(0,2.45fr) minmax(260px,.95fr)}
 #stats .stats-panel button:focus-visible{outline-color:#58f1e1}
+/* Reserve room for totals and wrapped save text; keep records legible at 960×600. */
+#stats .stats-body{grid-template-rows:132px 72px 80px minmax(118px,1fr) 80px}
+#stats .totals>div span,#stats .totals>div span small{font-size:8px}
 #stats .check-row{font-size:8px}
+#stats .check-row b{font-size:7px}
+#stats .save-grid b{font-size:8px}
+#stats .save-grid small{font-size:7px}
+#stats .save-grid button{font-size:8px}
