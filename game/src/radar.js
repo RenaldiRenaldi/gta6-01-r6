@@ -1,7 +1,7 @@
 import {canal,canalX,park,services,streets,cross} from './district.js';
 
 const center=200, radius=190;
-const colors={road:'#252832',edge:'#f2e3bc',water:'#2698d6',bank:'#e7cea0',park:'#78a267'};
+const colors={road:'#252832',edge:'#f2e3bc',water:'#23a6e5',bank:'#e7cea0',park:'#67994e'};
 export function radarProject(player,x,z,scale=1.45){
   return [center+(x-player.x)*scale,center-(z-player.z)*scale];
 }
@@ -44,10 +44,13 @@ export function drawRadar(canvas,game) {
     rect(x+36,z+36,44,44,'#e9dfc9');
   }
   rect(park.x,park.z,park.w,park.d,colors.park);
-  rect(park.x,park.z,2.5,park.d,'#dad0ad');rect(park.x,park.z,park.w,2.5,'#dad0ad');
+  rect(park.x,park.z,1.8,park.d,'#e5d8ad');rect(park.x,park.z,park.w,1.8,'#e5d8ad');
   for(const tree of game.city.trees){
     const [a,b]=project(tree.x,tree.z);
-    circle(ctx,a+1,b+2,3.4,'#597653');circle(ctx,a,b,2.8,'#407447');
+    circle(ctx,a+2,b+3,6.5,'#285c3e');
+    if(Math.round(tree.x)%3===0){
+      ctx.beginPath();ctx.moveTo(a,b-8);ctx.lineTo(a+6,b+5);ctx.lineTo(a-6,b+5);ctx.closePath();ctx.fillStyle='#2d7546';ctx.fill();
+    }else{circle(ctx,a,b,5.7,'#39884b');circle(ctx,a-1.8,b-1.8,3,'#94bb6d');}
   }
   const path=canal.map(([x,z])=>project(x,z));
   stroke(ctx,path,22*scale,colors.bank);stroke(ctx,path,12*scale,colors.water);
@@ -60,13 +63,18 @@ export function drawRadar(canvas,game) {
   for(const z of cross){
     const line=[project(-350,z),project(420,z)];
     stroke(ctx,line,22*scale,colors.edge);stroke(ctx,line,17*scale,colors.road);
+    const [bx,by]=project(canalX(z),z);
+    stroke(ctx,[[bx-12*scale,by-10*scale],[bx+12*scale,by-10*scale]],2.6,'#fff0c9');
+    stroke(ctx,[[bx-12*scale,by+10*scale],[bx+12*scale,by+10*scale]],2.6,'#fff0c9');
   }
   for(const b of game.city.buildings){
     if(Math.abs(b.x-p.x)>130||Math.abs(b.z-p.z)>135)continue;
     rect(b.x+1.3,b.z-1.6,b.w,b.d,'#97998c');
     rect(b.x,b.z,b.w,b.d,b.roof);
-    rect(b.x+.7,b.z+.5,b.w*.82,b.d*.75,'#c4c6be');
+    rect(b.x+.7,b.z+.5,b.w*.82,b.d*.75,b.h>30?'#7a9da9':'#bdbaa3');
     rect(b.x+b.w*.14,b.z-b.d*.12,b.w*.26,b.d*.28,'#eae9dc');
+    rect(b.x-b.w*.24,b.z+b.d*.2,b.w*.24,b.d*.22,'#eef0d6');
+    rect(b.x,b.z-b.d*.47,b.w*.83,1.2,'#536d76');
     rect(b.x-4.4,b.z+b.d*.39,.6,1.25,'#ffcb5f');
     rect(b.x+3.6,b.z+b.d*.39,.6,1.25,'#ffcc69');
   }
@@ -91,7 +99,10 @@ export function drawRadar(canvas,game) {
   const [lx,ly]=project(2,p.z-69);
   if(lx>126&&lx<277)caption(ctx,'JL. RASUNA SAID',lx+34,ly,14);
   const [px,py]=project(park.x,park.z);
-  if(Math.hypot(px-center,py-center)<142)caption(ctx,'MENTENG',px,py+17,13,'#fff4b9');
+  if(Math.hypot(px-center,py-center)<142){
+    caption(ctx,'HUTAN KOTA',px,py+17,16,'#e6ffbc');
+    caption(ctx,'MENTENG',px,py+34,13,'#fff4b9');
+  }
   ctx.save();ctx.translate(center,center);ctx.rotate(p.heading);
   ctx.beginPath();ctx.moveTo(0,-19);ctx.lineTo(11,11);ctx.lineTo(0,7);ctx.lineTo(-11,11);ctx.closePath();
   ctx.fillStyle='#fff';ctx.strokeStyle='#155e72';ctx.lineWidth=4;ctx.stroke();ctx.fill();

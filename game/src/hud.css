@@ -158,3 +158,13 @@ body[data-screen=menu] #hud,body[data-screen=stats] #hud,body[data-screen=wanted
 #stats .save-grid b{font-size:8px}
 #stats .save-grid small{font-size:7px}
 #stats .save-grid button{font-size:8px}
+/* Atlas detail stays local to the records map; district names sit above parcels. */
+#stats .map-water{fill:#248caa}
+#stats .map-land{fill:#d8c49e;stroke:#ffe2a2}
+#stats .map-road{stroke:#263e49;stroke-width:9;opacity:1}
+#stats .map-route{stroke-width:6;filter:drop-shadow(0 0 3px #ff138b)}
+#stats .map-label text{font-size:20px;stroke-width:5px;stroke:#253844;fill:#fff6df}
+#stats .map-place text{font:bold 21px Arial;fill:#ffe29c;paint-order:stroke;stroke:#173d46;stroke-width:5px}
+#stats .map-place circle{fill:#ffe29c;stroke:#173d46;stroke-width:2px}
+#stats .map-canal text{font:bold 17px Arial;letter-spacing:.7px;fill:#f1fcff;paint-order:stroke;stroke:#126997;stroke-width:4px}
+#stats .map-key text{font:bold 16px Arial;fill:#e2faf2}
