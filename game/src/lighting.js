@@ -98,9 +98,10 @@ export function createLight(scene) {
   dust.frustumCulled=false;scene.add(dust);
   return {sky,uniforms,ambient,key,scene,positions,seed,dust};
 }
-export function updateLight(light,season,player,camera,time){
+export function updateLight(light,season,player,camera,time,summerShowcase=false){
   const {sky,uniforms,ambient,key,scene,positions,seed,dust}=light;
-  const palette=seasons[season];
+  const palette=season===1&&summerShowcase
+    ?{sky:0x278dcc,horizon:0xffb86d,fog:0x78c7bf,sun:0xffe6a1,light:3.35}:seasons[season];
   uniforms.high.value.setHex(palette.sky);uniforms.low.value.setHex(palette.horizon);
   uniforms.light.value.set(.014,.085,1).normalize();uniforms.night.value=season===3?1:0;
   sky.position.copy(camera.position);
@@ -108,7 +109,8 @@ export function updateLight(light,season,player,camera,time){
   key.color.setHex(palette.sun);key.intensity=palette.light;
   key.position.set(player.x-43,player.y+49,player.z+82);
   key.target.position.set(player.x,Math.max(0,player.y-32),player.z);
-  scene.fog.color.setHex(palette.fog);scene.fog.density=season===3?.004:.00265;
+  scene.fog.color.setHex(palette.fog);
+  scene.fog.density=season===3 ? .004 : season===1 && summerShowcase ? .0019 : .00265;
   dust.visible=season!==1;
   if(dust.visible){
     dust.material.color.setHex([0xffbbd9,0xffffff,0xffb654,0xf5fbff][season]);

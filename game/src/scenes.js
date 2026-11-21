@@ -20,6 +20,29 @@ function lead(game,v,kmh,hp){
   Object.assign(game.player,{x:v.x,y:v.y,z:v.z,heading:v.heading});
   game.player.mesh.visible=false;syncVehicle(v,game.time);
 }
+function lockSign(scene,x,y,z){
+  const canvas=document.createElement('canvas');canvas.width=768;canvas.height=128;
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#14283b';ctx.fillRect(0,0,768,128);
+  ctx.fillStyle='#69e6d6';ctx.fillRect(0,0,768,9);ctx.fillRect(0,118,768,10);
+  ctx.font='bold 76px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#fff0c5';
+  ctx.fillText('RASUNA LOCK',384,65);
+  const texture=new T.CanvasTexture(canvas);texture.colorSpace=T.SRGBColorSpace;
+  const face=new T.MeshBasicMaterial({map:texture});
+  const sign=boxAt(scene,face,x,y,z,16,2.7,.18);sign.castShadow=false;
+}
+function rasunaLock(scene){
+  const x=-36,z=116,stone=material(0xd8c8a3,.62),trim=material(0x4c8f91,.4,.12),lamp=material(0xf8d378,.3,1.4);
+  for(const side of [-1,1]){
+    boxAt(scene,stone,x+side*8.1,13,z,3.1,26,3.8);
+    boxAt(scene,trim,x+side*8.1,25.6,z,4.3,.82,4.7);
+    boxAt(scene,lamp,x+side*8.1,27,z+2.05,.46,.46,.25);
+    boxAt(scene,stone,x+side*8.1,2.2,z,4.3,.72,5.1);
+  }
+  boxAt(scene,stone,x,26.8,z,17.4,2.2,3.9);
+  boxAt(scene,trim,x,28.3,z,18.4,.42,4.6);
+  lockSign(scene,x,28.35,z+2.05);
+}
 function stageSummerExit(game,car,target){
   // The frozen hero frame retains the chase telemetry and radar anchor.
   const door=model(car.mesh,1.22,.68,.95);
@@ -32,11 +55,12 @@ function stageSummerExit(game,car,target){
   boxAt(door,trim,0,.52,-.85,.14,.06,1.75);
   boxAt(door,material(0xc2b1a5,.24),.075,.42,-1.48,.035,.048,.23);
 
-  const dani=human(game.scene,car.x+2.85,car.z-.45,{color:0x39a7a6,armed:true});
+  const dani=human(game.scene,car.x+2.65,car.z-.45,{color:0x39a7a6,armed:true});
   dani.mesh.name='Summer Dani on foot';
   dani.heading=bearing(dani,target);
   pose(dani,game.time);
   game.shotAnchor={x:game.player.x,z:game.player.z};
+  game.shotVehicle=car;
   Object.assign(game.player,dani);
   game.vehicle=null;
   const muzzle=dani.gun.localToWorld(new T.Vector3(0,.062,.655));
@@ -55,21 +79,26 @@ export function stageScene(game,name){
   const {scene,player}=game;
   if(name==='summer'){
     prepare(game,11,2,96,98640,487);game.season=1;
-    const car=put(game,1.4,9,0xf13428,.13);
+    const car=put(game,-18.6,9,0xf13428,.13);
     lead(game,car,163,82);
     raise(game,6);
-    const nearestPatrol=addPatrol(game,5.3,16,'RAMMING',.25);
-    addPatrol(game,-6.2,12.2,'RAMMING',-.10);
-    addAirSupport(game,-2.0,8.5,24).heading=-1.02;
-    addPatrol(game,-6.3,39,'FIRING',.21);
-    addPatrol(game,6.8,70,'ROADBLOCK',1.2);
-    addPatrol(game,0,71,'ROADBLOCK',-1);
-    addPatrol(game,-12,46,'SEARCHING',.25);
-    addPatrol(game,8.3,58,'PURSUIT',-.25);
+    const nearestPatrol=addPatrol(game,-14.7,16,'RAMMING',.25);
+    addPatrol(game,-26.2,12.2,'RAMMING',-.10);
+    addAirSupport(game,-20.0,8.5,24).heading=-1.02;
+    addPatrol(game,-26.3,39,'FIRING',.21);
+    addPatrol(game,-11.2,70,'ROADBLOCK',1.2);
+    addPatrol(game,-18.6,71,'ROADBLOCK',-1);
+    addPatrol(game,-30,46,'SEARCHING',.25);
+    addPatrol(game,-9.7,58,'PURSUIT',-.25);
     addPatrol(game,3,88,'PURSUIT',.07);
-    confrontation(game,21);
-    put(game,7.4,33,0xe8c975,-.35);
-    put(game,-6.3,51,0xf5c070,.05);
+    const incident=confrontation(game,21);
+    incident.fighters.forEach(person=>person.mesh.visible=false);
+    game.life.people.forEach(person=>person.mesh.visible=false);
+    const lookout=human(scene,-12.2,24.5,{color:0xe8a74f,shade:2,heading:-1.35});
+    lookout.mesh.name='Lio Santos · lookout';pose(lookout,game.time);
+    put(game,-11.2,33,0xe8c975,-.35);
+    put(game,-24.9,51,0xf5c070,.05);
+    rasunaLock(scene);
     stageSummerExit(game,car,nearestPatrol);
   }else if(name==='spring'){
     prepare(game,2,1,134,12450,180);game.season=0;

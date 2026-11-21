@@ -310,7 +310,7 @@ function renderFrame(now){
   if(game.started&&!game.paused&&!frozen)advance(dt);
   updateCamera(Math.max(.01,dt));
   const staticScreen=['menu','stats','wanted'].includes(game.screen);
-  if(!staticScreen)updateLight(light,game.season,player,game.camera,game.time);
+  if(!staticScreen)updateLight(light,game.season,player,game.camera,game.time,game.shot==='summer'&&!game.shotLive);
   if(now>=nextHud&&!staticScreen){drawHud(game);nextHud=now+70;}
   if(!staticScreen&&(!frozen||!ready))game.draw();
   sound.update(game);

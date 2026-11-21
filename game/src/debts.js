@@ -16,7 +16,7 @@ const missions=[
   ['Night Freight','Tomás Ruiz',180,2100,'convoy',[[144,72]],['Find the reserve van','Disable the van','Collect both cash cases'],'They split the cash into two cases. Bring both.'],
   ['The Last Broadcast','Luz Moreno',180,2300,'hold',[[0,72]],['Find the transmitter','Defend the first wave','Defend the second wave'],'Keep the transmitter alive. Everybody gets to hear this.'],
   ['All Roads Lead Home','Mara Sol',126,2400,'drive',[[0,0],[72,0],[72,72],[0,72]],['Bring a working car','Run four crew checkpoints','Keep the engine alive'],'Four intersections. Make every light and don’t lose the car.'],
-  ['The Twelfth Debt','Ines Vega',280,12500,'vault',[[0,72],[0,-72]],['Clear six reserve guards','Hold F · Crack the vault','Break the lockdown','Bring the reserve home unseen'],'The reserve is in your trunk. Through the gap, Dani. We bring every dollar home.']
+  ['Bring Every Dollar Home','Ines Vega',280,12500,'vault',[[0,72],[0,-72]],['Clear six reserve guards','Hold F · Crack the vault','Break the lockdown','Bring the reserve home unseen'],'The ledger closes tonight, Dani. Through the gap—we bring every dollar home.']
 ];
 export const debts=missions.map(([title,contact,seconds,reward,mode,stops,steps,dialogue])=>({title,contact,seconds,reward,mode,stops:stops.map(point),steps,dialogue}));
 export const newJob=(index=0)=>({index,status:index>=12?'complete':'available',phase:0,timer:debts[index]?.seconds||0,progress:0,spawned:false,checkpoint:0,courier:null,cases:[],message:''});
